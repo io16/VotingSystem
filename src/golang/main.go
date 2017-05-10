@@ -1,21 +1,37 @@
 package main
-
+//export PATH=$PATH:$GOPATH/bin
 import (
-
 	"net/http"
-
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-
-	"github.com/labstack/gommon/log"
-
 	"github.com/labstack/echo"
+)
+import (
+	"./config"
 )
 
 // Create a GORM-backend model
-type User struct {
+
+type Test struct {
 	gorm.Model
 	Name string
+	Category string
+
+
+}
+type TestQuestion struct {
+	gorm.Model
+	NumberQuestion int
+	ListQuestions string
+	Test Test
+	TestID int
+}
+type TestAnswerToQuestion struct {
+	gorm.Model
+	ListAnswers string
+	NumberQuestion int
+	Test Test
+	TestID int
 }
 
 // Create another GORM-backend model
@@ -32,11 +48,10 @@ func Hello(c echo.Context) error {
 }
 
 func main() {
-	DB, err := gorm.Open("postgres", "host=localhost user=postgres dbname=AIPPZ sslmode=disable password=299792458")
-	if err != nil {
-		log.Panic(err)
-	}
-	DB.AutoMigrate(&User{}, &Product{})
+	config.InitDB()
+	config.DB.AutoMigrate(&Test{},&TestAnswerToQuestion{},&TestQuestion{})
+	defer  config.CloseDB()
+
 	e := echo.New()
 	e.GET("/login", Hello)
 
