@@ -2,7 +2,7 @@ package main
 //export PATH=$PATH:$GOPATH/bin
 import (
 	"net/http"
-	"github.com/jinzhu/gorm"
+	//"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/labstack/echo"
 )
@@ -15,12 +15,7 @@ import (
 
 
 // Create another GORM-backend model
-type Product struct {
-	gorm.Model
-	Name        string
-	Description string
-	Type        int
-}
+
 
 func Hello(c echo.Context) error {
 

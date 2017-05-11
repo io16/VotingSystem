@@ -6,7 +6,7 @@ import (
 	"../config"
 	"net/http"
 	"fmt"
-	"encoding/json"
+
 )
 
 type requestJson struct {
@@ -96,9 +96,6 @@ func GetVote(c echo.Context) error  {
 
 	fmt.Println(t.IdVote)
 	config.DB.Where("id = ?", t.IdVote).First(&vote)
-	fmt.Println(vote.ID)
 
-	json ,_ := json.Marshal(vote)
-
-	return c.JSON(http.StatusOK, json)
+	return c.JSON(http.StatusOK, vote)
 }
