@@ -35,6 +35,8 @@ func main() {
 	e := echo.New()
 	e.GET("/login", Hello)
 	e.POST("/test", models.SaveVote)
+	e.POST("/getid", models.GetVote)
+
 
 	e.Logger.Fatal(e.Start(":1323"))
 }

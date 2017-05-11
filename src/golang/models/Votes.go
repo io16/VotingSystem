@@ -6,6 +6,7 @@ import (
 	"../config"
 	"net/http"
 	"fmt"
+	"encoding/json"
 )
 
 type requestJson struct {
@@ -35,6 +36,10 @@ type VoteAnswerToQuestion struct {
 	NumberQuestion int
 	Vote           Vote
 	VoteID         uint
+}
+
+type VoteRequest struct {
+	IdVote int
 }
 
 func SaveVote(c echo.Context) error {
@@ -77,4 +82,23 @@ func SaveVote(c echo.Context) error {
 	}
 
 	return c.String(http.StatusOK, "ok")
+}
+
+func GetVote(c echo.Context) error  {
+
+	t := new(VoteRequest)
+
+	if err := c.Bind(t); err != nil {
+		return err
+
+	}
+	vote := Vote{}
+
+	fmt.Println(t.IdVote)
+	config.DB.Where("id = ?", t.IdVote).First(&vote)
+	fmt.Println(vote.ID)
+
+	json ,_ := json.Marshal(vote)
+
+	return c.JSON(http.StatusOK, json)
 }
