@@ -8,31 +8,11 @@ import (
 )
 import (
 	"./config"
+	"./models"
 )
 
 // Create a GORM-backend model
 
-type Test struct {
-	gorm.Model
-	Name string
-	Category string
-
-
-}
-type TestQuestion struct {
-	gorm.Model
-	NumberQuestion int
-	ListQuestions string
-	Test Test
-	TestID int
-}
-type TestAnswerToQuestion struct {
-	gorm.Model
-	ListAnswers string
-	NumberQuestion int
-	Test Test
-	TestID int
-}
 
 // Create another GORM-backend model
 type Product struct {
@@ -49,11 +29,12 @@ func Hello(c echo.Context) error {
 
 func main() {
 	config.InitDB()
-	config.DB.AutoMigrate(&Test{},&TestAnswerToQuestion{},&TestQuestion{})
-	defer  config.CloseDB()
+	config.DB.AutoMigrate(&models.VoteQuestion{}, &models.Vote{}, &models.VoteAnswerToQuestion{})
+	defer config.CloseDB()
 
 	e := echo.New()
 	e.GET("/login", Hello)
+	e.POST("/test", models.SaveVote)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }
