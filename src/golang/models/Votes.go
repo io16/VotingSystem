@@ -6,11 +6,10 @@ import (
 	"../config"
 	"net/http"
 	"fmt"
-
 )
 
 type requestJson struct {
-	Name           string //`json:"name" gorm:"size:255"`
+	Name             string //`json:"name" gorm:"size:255"`
 	Category         string //`json:"category" gorm:"size:255"`
 	Questions        struct {
 				 Question []string //`json:"questions" gorm:"size:255"`
@@ -84,7 +83,7 @@ func SaveVote(c echo.Context) error {
 	return c.String(http.StatusOK, "ok")
 }
 
-func GetVote(c echo.Context) error  {
+func GetVote(c echo.Context) error {
 
 	t := new(VoteRequest)
 	if err := c.Bind(t); err != nil {
@@ -96,22 +95,14 @@ func GetVote(c echo.Context) error  {
 	voteAnswer := []VoteAnswerToQuestion{}
 
 	config.DB.Where("vote_id = ?", t.IdVote).Find(&voteQuest)
-	fmt.Println(voteQuest)
-
 	config.DB.Where("vote_id = ?", t.IdVote).Find(&voteAnswer)
-	fmt.Println(voteAnswer)
-
-	fmt.Println(t.IdVote)
 	config.DB.Where("id = ?", t.IdVote).First(&vote)
 
 	jsonToSend := new(requestJson)
 
-
 	jsonToSend.Name = vote.Name
 	jsonToSend.Category = vote.Category
 	jsonToSend.Questions.Question = make([]string, len(voteQuest))
-
-	//jsonToSend.AnswerToQuestion = voteAnswer
 
 	for i, item := range voteQuest {
 		jsonToSend.Questions.Question[i] = item.Question
@@ -123,14 +114,13 @@ func GetVote(c echo.Context) error  {
 		var tempArray[] string
 		for _, a := range voteAnswer {
 			if a.NumberQuestion == q.NumberQuestion {
-			tempArray = append(tempArray, a.Answer)
+				tempArray = append(tempArray, a.Answer)
 			}
 
 		}
 		test[q.NumberQuestion] = tempArray
 	}
 	jsonToSend.AnswerToQuestion = test
-
 
 	return c.JSON(http.StatusOK, jsonToSend)
 
