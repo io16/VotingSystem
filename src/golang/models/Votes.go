@@ -6,6 +6,11 @@ import (
 	"../config"
 	"net/http"
 	"fmt"
+
+	"github.com/jmoiron/sqlx/types"
+	"github.com/dgrijalva/jwt-go"
+	"encoding/json"
+	"github.com/labstack/gommon/log"
 )
 
 type requestJson struct {
@@ -36,13 +41,56 @@ type VoteAnswerToQuestion struct {
 	Vote           Vote
 	VoteID         uint
 }
+type VoteStats struct {
+	gorm.Model
+	VoteID uint
+	Vote Vote
+	VoteStats types.JSONText
 
-type VoteRequest struct {
-	IdVote int
+}
+type UserAnswer struct {
+	gorm.Model
+	UserID     uint
+	User       User
+	UserAnswer types.JSONText
+	Vote	Vote
+	VoteID	int
 }
 
-func SaveVote(c echo.Context) error {
 
+type request struct {
+	Vote []struct{ Answer []string  `json:"answer"` }`json:"vote"`
+	VoteID int
+}
+func SaveUserVote(c echo.Context) error {
+
+
+	t := new(request)
+
+	if err := c.Bind(t); err != nil {
+		return err
+
+	}
+	userAnswer := UserAnswer{}
+	name, err := json.Marshal(t)
+	if err != nil {
+		log.Printf("\n%s", err)
+	}
+	userAnswer.UserAnswer = name
+	userAnswer.VoteID = t.VoteID
+
+
+	log.Print(userAnswer.UserAnswer)
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*config.JwtCustomClaims)
+	userAnswer.UserID = claims.ID
+
+	config.DB.Create(&userAnswer)
+	return c.JSON(http.StatusOK, t)
+}
+func SaveVote(c echo.Context) error {
+	// TODO записувати шаблон в таблицю votestats
+	//TODO змінить спосіб запису в БД на json формат
 	t := new(requestJson)
 
 	if err := c.Bind(t); err != nil {
@@ -84,7 +132,10 @@ func SaveVote(c echo.Context) error {
 }
 
 func GetVote(c echo.Context) error {
-
+	//TODO змінить спосіб отримання з БД на json формат
+	type VoteRequest struct {
+		IdVote int
+	}
 	t := new(VoteRequest)
 	if err := c.Bind(t); err != nil {
 		return err
@@ -123,5 +174,12 @@ func GetVote(c echo.Context) error {
 	jsonToSend.AnswerToQuestion = test
 
 	return c.JSON(http.StatusOK, jsonToSend)
+
+}
+
+func updateVoteStats(request request) {
+//TODO  оновлювати інфу після отримання нового голосу
+	voteStats :=VoteStats{}
+	config.DB.Where("id = ?", request.VoteID).First(&voteStats)
 
 }
