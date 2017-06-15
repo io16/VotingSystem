@@ -10,7 +10,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"log"
 	"../config"
-	"github.com/gorilla/sessions"
 )
 
 type User struct {
@@ -96,9 +95,7 @@ func saveUserToDB(user *User) bool {
 }
 
 func UserAuthentication(login, password string) (User, error) {
-	user :=User{}
-
-
+	user := User{}
 
 	config.DB.Where("login = ?", login).First(&user)
 	config.DB.Model(user).Related(&user.Role)
@@ -113,27 +110,3 @@ func UserAuthentication(login, password string) (User, error) {
 	return user, nil
 }
 
-var store = sessions.NewCookieStore([]byte("something-very-secret"))
-
-func MyHandler(c echo.Context) error {
-
-	name :=c.QueryParam("name")
-	// Get a session. Get() always returns a session, even if empty.
-	session, err := store.Get(c.Request(), "session-name")
-	if err != nil {
-
-		return c.String(http.StatusInternalServerError,"error")
-	}
-
-
-	// Set some session values.
-	fmt.Println(name)
-	fmt.Println(session.Values["name"])
-	session.Values["name"] = name
-	session.Values["foo"] = "bar"
-	session.Values[42] = 43
-	// Save it before we write to the response/return from the handler.
-	//session.Save(c.Request(), c.Response())
-	return c.String(http.StatusOK,"ok")
-
-}
