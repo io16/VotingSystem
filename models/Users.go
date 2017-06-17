@@ -10,6 +10,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"log"
 	"../config"
+	"encoding/json"
 )
 
 type User struct {
@@ -27,13 +28,34 @@ type Role struct {
 	UserRole string
 }
 
-func AddUser(c echo.Context) error {
-
-	user := new(User)
-	if err := c.Bind(user); err != nil {
-		return err
+func GetUsersToVote(c echo.Context) error {
+	type UsersToVote struct {
+		Name string
+		Time string
 	}
 
+	idVote := c.FormValue("idvote")
+	userAnswers := []UserAnswer{}
+	config.DB.Where("vote_id = ?", idVote).Find(&userAnswers)
+	users := []UsersToVote{}
+	user := User{}
+
+	for i, item := range userAnswers {
+		t := UsersToVote{}
+		config.DB.Where("id = ?", item.UserID).First(&user)
+		t.Name = user.Name
+		t.Time = userAnswers[i].Time
+		users = append(users, t)
+	}
+	return c.JSON(http.StatusOK, users)
+}
+func AddUser(c echo.Context) error {
+
+	user := User{}
+	//if err := c.Bind(user); err != nil {
+	//	return err
+	//}
+	json.Unmarshal([]byte(c.FormValue("data")), &user)
 	userStatus := isUserValid(user)
 	if userStatus {
 		userStatus = saveUserToDB(user)
@@ -42,7 +64,7 @@ func AddUser(c echo.Context) error {
 	return c.String(http.StatusOK, strconv.FormatBool(userStatus)) // if user created -- return true
 }
 
-func isUserValid(user *User) bool {
+func isUserValid(user User) bool {
 	validationStatus := false
 	r, _ := regexp.Compile("^[A-Za-z0-9_-]{3,50}$")
 
@@ -62,7 +84,7 @@ func isEmailValid(email string) bool {
 	return r.MatchString(email)
 }
 
-func saveUserToDB(user *User) bool {
+func saveUserToDB(user User) bool {
 
 	temp := User{}
 

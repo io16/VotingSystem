@@ -70,6 +70,8 @@ func main() {
 	e.POST("/savevote", models.SaveVote)
 	e.POST("/getvote", models.GetVote)
 	e.GET("/getvotes", models.GetVotes)
+	e.POST("/getuserstovote", models.GetUsersToVote)
+
 
 	e.POST("/getvotestat",models.GetVotesStats)
 

@@ -7,7 +7,7 @@ request example  /savevote
     	"question" :["Кількість студентів в чдту","Кількість жителів в Черкасах"],
     	"type" : ["radio","checkbox"]
   	},
-    "answertoquestion":{"1" :[" 100","1000","1000","не знаю"], "2":["100 000","200 000","300 000"]
+    "answertoquestion":[[" 100","1000","1000","не знаю"], ["100 000","200 000","300 000"]]
      }
 
 
@@ -36,7 +36,10 @@ request example  /adduser
 "voteid":1
 }
 
-
+/getuserstovote
+{
+"idvote" : 10
+}
 8///////////////
 {
 "vote":[{"answer":[1,2,3,4 ], countAnswers :0, stats:[] } ],

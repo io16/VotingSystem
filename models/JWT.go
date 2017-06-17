@@ -17,18 +17,20 @@ type JwtCustomClaims struct {
 }
 
 func GetJWT(c echo.Context) error {
-
+	//dsadas
 	fmt.Print("in func jwt ")
 	type User struct {
-		Login string  `json:"login"`
-		Pass  string `json:"pass"`
+		Login string
+		Pass  string
 	}
-	user := new(User)
-	if err := c.Bind(user); err != nil {
-		return c.String(http.StatusInternalServerError, "")
-	}
+	user := User{}
+	//if err := c.Bind(user); err != nil {
+	//	return c.String(http.StatusInternalServerError, "")
+	//}
+	//json.Unmarshal([]byte(c.FormValue("data")), &user)
+	user.Login = c.FormValue("login")
+	user.Pass = c.FormValue("pass")
 
-	fmt.Println(user.Pass)
 
 	userFromDB, err := UserAuthentication(user.Login, user.Pass)
 	if err != nil {
@@ -56,6 +58,7 @@ func GetJWT(c echo.Context) error {
 
 		return c.JSON(http.StatusOK, echo.Map{
 			"token": t,
+			"user" : userFromDB.Login,
 		})
 
 	}

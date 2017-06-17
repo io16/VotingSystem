@@ -1,8 +1,23 @@
 body {
-  padding-top: 20px;
-  padding-bottom: 20px;
+
+    padding-bottom: 20px;
 }
 
 .navbar {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+#sign-in-a {
+    display: block;
+}
+
+#sign-out-a {
+    display: none;
+}
+
+#reg-a {
+    display: block;
+}
+#user-a{
+    display: none;
 }

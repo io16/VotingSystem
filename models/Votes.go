@@ -41,6 +41,7 @@ type UserAnswer struct {
 	UserAnswer types.JSONText
 	Vote       Vote
 	VoteID     int
+	Time       string
 }
 
 type saveUserVoteParse struct {
@@ -78,17 +79,21 @@ type voteParse struct {
 	Category         string //`json:"category" gorm:"size:255"`
 	Questions        struct {
 				 Question []string //`json:"questions" gorm:"size:255"`
+				 Type     []string
 			 }
-	AnswerToQuestion map[int][]string
+	AnswerToQuestion [][]string
 }
 
 func SaveVote(c echo.Context) error {
 
-	t := new(voteParse)
+	t := voteParse{}
 
-	if err := c.Bind(t); err != nil {
-		return err
-	}
+	json.Unmarshal([]byte(c.FormValue("data")), &t)
+
+
+	//if err := c.Bind(t); err != nil {
+	//	return err
+	//}
 
 	vote := Vote{}
 	vote.Name = t.Name;
@@ -128,18 +133,21 @@ func GetVote(c echo.Context) error {
 	type VoteRequest struct {
 		IdVote int
 	}
-	request := new(VoteRequest)
-	if err := c.Bind(request); err != nil {
-		return err
+	//json.Unmarshal([]byte(c.FormValue("idvote")), &request)
+	//request := VoteRequest{}
+	//if err := c.Bind(request); err != nil {
+	//	return err
+	//
+	//}
 
-	}
+	request := c.FormValue("idvote")
 	vote := Vote{}
 	voteQuest := VoteQuestion{}
 	voteAnswer := VoteAnswerToQuestion{}
 
-	config.DB.Where("id = ?", request.IdVote).First(&vote)
-	config.DB.Where("vote_id = ?", request.IdVote).Find(&voteQuest)
-	config.DB.Where("vote_id = ?", request.IdVote).Find(&voteAnswer)
+	config.DB.Where("id = ?", request).First(&vote)
+	config.DB.Where("vote_id = ?", request).Find(&voteQuest)
+	config.DB.Where("vote_id = ?", request).Find(&voteAnswer)
 
 	jsonToSend := new(voteParse)
 

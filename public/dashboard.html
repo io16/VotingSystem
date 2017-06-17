@@ -13,13 +13,15 @@
 
     <!-- Bootstrap core CSS -->
     <link href="/lib/bootstrap-3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="/css/navbar.css" rel="stylesheet">
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">-->
 
     <!-- Custom styles for this template -->
     <link href="/css/dashboard.css" rel="stylesheet">
-
+      <script src="/js/jquery-1.7.2.min.js"></script>
+      <script src="/js/jquery.session.js"></script>
+      <script src="/js/dashboard.js"></script>
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><!--<script src="../../assets/js/ie8-responsive-file-warning.js"></script>--><![endif]-->
     <!--<script src="../../assets/js/ie-emulation-modes-warning.js"></script>-->
@@ -33,7 +35,10 @@
 
   <body>
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+
+    <!-- Static navbar -->
+    <nav class="navbar navbar-default">
       <div class="container-fluid">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -45,26 +50,31 @@
           <a class="navbar-brand" href="#">Project name</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Help</a></li>
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="dashboard">DashBoard</a></li>
+
+            <li><a href="createtest">Create Test</a></li>
+
           </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Search...">
-          </form>
-        </div>
-      </div>
+          <ul class="nav navbar-nav navbar-right">
+
+              <li><a href="registration" id="reg-a">Registration</a></li>
+              <li><a href="signin" id="sign-in-a" >Sign in</a></li>
+              <li><a href="#" id="sign-out-a">Sign out</a></li>
+              <li><a href="#" id="user-a">Sign out</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div><!--/.container-fluid -->
     </nav>
 
-    <div class="container-fluid">
+
+    <div class="container-fluid" >
       <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
+        <div class="col-sm-3 col-md-2 sidebar" >
+          <ul class="nav nav-sidebar" id="ulTest">
             <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
             <li><a href="#">Reports</a></li>
-            <li><a href="#">Analytics</a></li>
+            <li><a  onclick="getTest()" id="">Analytics</a></li>
             <li><a href="#">Export</a></li>
           </ul>
           <ul class="nav nav-sidebar">
@@ -80,7 +90,7 @@
             <li><a href="">Another nav item</a></li>
           </ul>
         </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="contentDashBoard">
           <h1 class="page-header">Dashboard</h1>
 
           <div class="row placeholders">
@@ -104,48 +114,47 @@
               <h4>Label</h4>
               <span class="text-muted">Something else</span>
             </div>
-          </div>
+              <div id="startTestButtons"></div>
+              <button class="btn btn-lg btn-primary btn-block" type="button" onclick="">Show Results</button>
+              <button class="btn btn-lg btn-primary btn-block"  id="startTestButton" type="button" onclick="createTest()">Start Test</button>
 
+          </div>
+            <div id="createTestDiv"></div>
           <h2 class="sub-header">Section title</h2>
           <div class="table-responsive">
             <table class="table table-striped">
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
+                  <th>User Name</th>
+                  <th>Time</th>
+
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="tbodyUserToAnswer">
                 <tr>
                   <td>1,001</td>
                   <td>Lorem</td>
                   <td>ipsum</td>
-                  <td>dolor</td>
-                  <td>sit</td>
+
                 </tr>
                 <tr>
                   <td>1,002</td>
                   <td>amet</td>
                   <td>consectetur</td>
-                  <td>adipiscing</td>
-                  <td>elit</td>
+
                 </tr>
                 <tr>
                   <td>1,003</td>
                   <td>Integer</td>
                   <td>nec</td>
-                  <td>odio</td>
-                  <td>Praesent</td>
+
                 </tr>
                 <tr>
                   <td>1,003</td>
                   <td>libero</td>
                   <td>Sed</td>
-                  <td>cursus</td>
-                  <td>ante</td>
+
                 </tr>
                 <tr>
                   <td>1,004</td>
@@ -237,6 +246,7 @@
         </div>
       </div>
     </div>
+  </div>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
