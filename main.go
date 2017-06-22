@@ -57,8 +57,8 @@ func main() {
 	e.Static("/", "assets")
 
 	//e.File("/", "login.html")
-	e.File("/dashboard", "public/dashboard.html")
-	e.File("/", "public/index.html")
+	e.File("/", "public/dashboard.html")
+	//e.File("/", "public/index.html")
 	e.File("/signin", "public/signin.html")
 	e.File("/registration", "public/registration.html")
 	e.File("/navbar", "public/navbar.html")
@@ -76,6 +76,7 @@ func main() {
 	e.POST("/getvotestat",models.GetVotesStats)
 
 	e.POST("/adduser", models.AddUser)
+	e.POST("/isUserCompleteTest", models.IsUserCompleteTest)
 
 	r := e.Group("/restricted")
 
@@ -88,5 +89,6 @@ func main() {
 	r.Use(middleware.JWTWithConfig(jwtConfig))
 	//r.POST("/getjwt", models.GetJWT,ServerHeader)
 	r.POST("/saveuservote", models.SaveUserVote)
+	r.POST("/test",models.TestJWT)
 	e.Logger.Fatal(e.Start(":1323"))
 }

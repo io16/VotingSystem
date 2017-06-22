@@ -43,6 +43,8 @@ func GetUsersToVote(c echo.Context) error {
 	for i, item := range userAnswers {
 		t := UsersToVote{}
 		config.DB.Where("id = ?", item.UserID).First(&user)
+
+
 		t.Name = user.Name
 		t.Time = userAnswers[i].Time
 		users = append(users, t)
@@ -130,5 +132,19 @@ func UserAuthentication(login, password string) (User, error) {
 	}
 
 	return user, nil
+}
+func IsUserCompleteTest(c echo.Context) error {
+
+	voteid := c.FormValue("idvote")
+	userLogin := c.FormValue("login")
+	user := User{}
+	userAnsw := UserAnswer{}
+	config.DB.Where("login = ?", userLogin).First(&user)
+	config.DB.Where("vote_id = ? AND user_id = ?", voteid, user.ID).First(&userAnsw)
+	if userAnsw.ID != 0 {
+		return c.String(http.StatusOK, "true")
+	}
+
+	return c.String(http.StatusOK, "false")
 }
 

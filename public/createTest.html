@@ -9,6 +9,7 @@
     <script src="/js/jquery-1.7.2.min.js"></script>
     <script src="/js/jquery.session.js"></script>
     <script src="/js/createTest.js"></script>
+    <!--<script src="/js/jquery-ui.js"></script>-->
 
 
 
@@ -27,19 +28,19 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Project name</a>
+                <a class="navbar-brand" href="#">Voting System</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Home</a></li>
-                    <li><a href="createtest">Create Test</a></li>
+                    <li ><a href="/">Home</a></li>
+                    <li class="active"><a href="createtest">Create Test</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
 
                     <li><a href="registration" id="reg-a">Registration</a></li>
                     <li><a href="signin" id="sign-in-a" >Sign in</a></li>
-                    <li><a href="#" id="sign-out-a">Sign out</a></li>
-                    <li><a href="#" id="user-a">Sign out</a></li>
+                    <li><a href="#" id="sign-out-a" onclick="signOut()">Sign out</a></li>
+                    <li><a href="#" id="user-a"></a></li>
                 </ul>
             </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->
@@ -50,13 +51,31 @@
 
     <div class="create-test">
         <!--<form class="form-signin" id="createTestTemplate">-->
+        <!--<label for="question-1-countAnswer">Count Answers:</label>-->
+        <div id="wrongDateDiv1"></div>
+        <label for="testName">Test Name: </label>
+        <input type="text" id="testName" class="form-control" onchange="validateFirstStageText(this)" placeholder="Test Name" data-toggle="tooltip" data-placement="left" title=" input letters or numbers ">
+        <label for="testCategory">Test Category: </label>
+        <input type="text" id="testCategory" class="form-control" onchange="validateFirstStageText(this)" placeholder="Test Category" data-toggle="tooltip" data-placement="left" title="input letters or numbers ">
+        <!--<div class="form-group has-success has-feedback" id="countQuestionsDiv">-->
+            <label for="countQuestions">Count Questions: </label>
+            <!--<input type="text" id="countQuestions" class="form-control" placeholder="Count Question " pattern="[1-9][0-9]*" data-toggle="tooltip" data-placement="left" title="Count Question!" required>-->
+            <input type="text" class="form-control" id="countQuestions"  onchange="validateFirstStageCount(this)" placeholder="Count Question "  data-toggle="tooltip" data-placement="left" title="input number > 0">
+            <!--<span class="glyphicon glyphicon-ok form-control-feedback"></span>-->
+        <!--</div>-->
+        <!--<div class="form-group has-error has-feedback">-->
+                <!--<input type="text" class="form-control" id="inputError">-->
+                <!--<span class="glyphicon glyphicon-remove form-control-feedback"></span>-->
+        <!--</div>-->
+        <!--<div class="form-group has-success has-feedback">-->
+                <!--<input type="text" class="form-control" id="inputSuccess">-->
+                <!--<span class="glyphicon glyphicon-ok form-control-feedback"></span>-->
+        <!--</div>-->
 
-        <input type="text" id="testName" class="form-control" placeholder="Test Name">
-        <input type="text" id="testCategory" class="form-control" placeholder="Test Category ">
-        <input type="text" id="countQuestions" class="form-control" placeholder="Count Question " pattern="[1-9][0-9]*" required>
-        <button class="btn btn-lg btn-primary btn-block" type="button" onclick="insertQuestions()"  >Ok</button>
+        <button class="btn btn-lg btn-primary btn-block" type="button" id="insertQuestionsBtn" onclick="insertQuestions()"   disabled >Ok</button>
         <!--</form>-->
         <!--<form class="form-signin" id="createTestAnswers">-->
+        <div id="wrongDateDiv2"></div>
         <div id="questions">
             <!--<div class="form-group">-->
                 <!--<label for="question-1-countAnswer">Count Answers:</label>-->
@@ -66,7 +85,7 @@
                 <!--<label class="radio-inline"><input type="radio" name="optradio">checkbox </label>-->
             <!--</div>-->
         </div>
-            <button id="createTestButton" class="btn btn-lg btn-primary btn-block" type="button" onclick="insertAnswers()"   >Create Test</button>
+            <button id="createTestButton" class="btn btn-lg btn-primary btn-block" type="button" onclick="insertAnswers()"   disabled >Create Test</button>
         <!--</form>-->
 
         <div id="questionsWithFields">
@@ -83,6 +102,10 @@
     </div>
 
     </div>
-
+<!--<script>-->
+    <!--$(document).ready(function(){-->
+        <!--$('[data-toggle="tooltip"]').tooltip();-->
+    <!--});-->
+<!--</script>-->
 </body>
 </html>

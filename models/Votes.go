@@ -9,6 +9,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"encoding/json"
 	"github.com/labstack/gommon/log"
+	"fmt"
+	"time"
 )
 
 type Vote struct {
@@ -46,17 +48,22 @@ type UserAnswer struct {
 
 type saveUserVoteParse struct {
 	Vote   []struct{ Answer []string  `json:"answer"` }`json:"vote"`
-	VoteID int
+	VoteID int `json:"voteid"`
 }
 
 func SaveUserVote(c echo.Context) error {
 
-	t := new(saveUserVoteParse)
+	time.Now()
+	//t := new(saveUserVoteParse)
+	//
+	//if err := c.Bind(t); err != nil {
+	//	return err
+	//
+	//}
+	t := saveUserVoteParse{}
 
-	if err := c.Bind(t); err != nil {
-		return err
-
-	}
+	json.Unmarshal([]byte(c.FormValue("data")), &t)
+	fmt.Println(c.FormValue("data"))
 	updateVoteStats(t)
 	userAnswer := UserAnswer{}
 	byteJson, err := json.Marshal(t)
@@ -69,6 +76,12 @@ func SaveUserVote(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(*JwtCustomClaims)
 	userAnswer.UserID = claims.ID
+
+	time := time.Now()
+	//fmt.Println(time.String())
+	//fmt.Println(time.Format("2006-01-02 15:04:05"))
+	//
+	userAnswer.Time = time.Format("2006-01-02 15:04:05")
 
 	config.DB.Create(&userAnswer)
 	return c.JSON(http.StatusOK, t)
@@ -123,7 +136,7 @@ func SaveVote(c echo.Context) error {
 
 	config.DB.Create(&voteAnswToQuest)
 	config.DB.Create(&voteQuestion)
-	createVoteStatsRow(vote.ID, voteAnswToQuest)
+ 	createVoteStatsRow(vote.ID, voteAnswToQuest)
 
 	return c.String(http.StatusOK, "ok")
 }
@@ -175,12 +188,13 @@ func GetVotesStats(c echo.Context) error {
 	type VoteRequest struct {
 		VoteId int
 	}
-	request := new(VoteRequest)
-	if err := c.Bind(request); err != nil {
-		return err
-
-	}
-	config.DB.Where("vote_id = ?", request.VoteId).First(&voteStat)
+	//request := new(VoteRequest)
+	//if err := c.Bind(request); err != nil {
+	//	return err
+	//
+	//}
+	request := c.FormValue("voteid")
+	config.DB.Where("vote_id = ?", request).First(&voteStat)
 
 	return c.JSON(http.StatusOK, voteStat.VoteStats)
 }
@@ -195,22 +209,22 @@ type voteStatsParse struct {
 func createVoteStatsRow(voteId uint, answers VoteAnswerToQuestion) {
 
 	voteStats := voteStatsParse{}
-	var voteansw struct{ Question map[int][]string `json:"question"` }
+	var voteansw [][]string
 
-	answers.Answer.Unmarshal(&voteansw.Question)
+	answers.Answer.Unmarshal(&voteansw)
 
-	for key, answer := range voteansw.Question {
+	for key, answer := range voteansw {
 
 		var temp struct{ CountAnswers int; Stats []int }
 
 		voteStats.Question = append(voteStats.Question, temp)
-		voteStats.Question[key - 1].CountAnswers = 0
+		voteStats.Question[key].CountAnswers = 0
 
 		for i, _ := range answer {
 			if i == 0 {
-				voteStats.Question[key - 1].Stats = make([]int, len(answer))
+				voteStats.Question[key].Stats = make([]int, len(answer))
 			}
-			voteStats.Question[key - 1].Stats[i] = 0
+			voteStats.Question[key ].Stats[i] = 0
 		}
 	}
 	byteJson, err := json.Marshal(voteStats)
@@ -223,7 +237,7 @@ func createVoteStatsRow(voteId uint, answers VoteAnswerToQuestion) {
 	config.DB.Create(&v)
 
 }
-func updateVoteStats(userVote *saveUserVoteParse) {
+func updateVoteStats(userVote saveUserVoteParse) {
 
 	voteStats := VoteStats{}
 	voteStatsParse := voteStatsParse{}

@@ -65,3 +65,6 @@ func GetJWT(c echo.Context) error {
 
 	return echo.ErrUnauthorized
 }
+func TestJWT(c echo.Context) error {
+	return c.String(http.StatusOK,"")
+}

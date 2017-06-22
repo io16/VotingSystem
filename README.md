@@ -51,4 +51,8 @@ request example  /adduser
 "voteid":21
 }
 
-/
+/getvotestat
+
+  {
+  "voteid" : 32
+  }

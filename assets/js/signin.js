@@ -4,21 +4,17 @@
 $(document).ready(function () {
     console.log("ready!");
     var t = getSessionToken();
-    if (t!= undefined){
+    if (t != undefined) {
         console.log(getSessionUser());
         document.getElementById("sign-in-a").style.display = "none";
         document.getElementById("reg-a").style.display = "none";
         document.getElementById("sign-out-a").style.display = "block";
         document.getElementById("user-a").style.display = "block";
+
         document.getElementById("user-a").innerHTML = getSessionUser()
     }
 
-
-
-
 });
-
-
 
 function signin() {
     var login = document.getElementById('inputLogin').value
@@ -26,46 +22,34 @@ function signin() {
     var obj = new Object();
     obj.login = login;
     obj.pass = pass;
-    // $.post("/getjwt", {
-    //     data: JSON.stringify(obj)
-    // }, function (data, status, xhr) {
-    //     alert(xhr.status);
-    //     alert(status);
-    //     alert(data);
-    // });
-
     $.ajax
     ({
         type: "POST",
         url: "/getjwt",
         dataType: 'json',
         async: false,
-        // headers: {
-        //     "Authorization": "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9uIFNub3ciLCJhZG1pbiI6dHJ1ZSwiZXhwIjoxNDkwMzYxMzg4fQ.AUp-oA5HXLojnrsnrmTHbWlZBduJs69osZEVh3ZfBfw"
-        // },
+
         data: {
             login: login,
             pass: pass
 
         },
         success: function (token) {
+            $.session.set("token", token.token);
+            $.session.set("user", token.user);
+            window.location.replace("/")
+        },
 
-            $(function () {
-                $.session.set("token", token.token);
-                $.session.set("user", token.user);
-            });
-
-                window.location.reload("http://localhost:1323/")
-
-
+        error: function (e) {
+            document.getElementById('errorDiv').innerHTML = '<span class="label label-danger "> Wrong login or password. Try again or go away</span>'
         }
-
     });
 
 }
 
 function getSessionToken() {
     return $.session.get("token");
-}function getSessionUser() {
+}
+function getSessionUser() {
     return $.session.get("user");
 }

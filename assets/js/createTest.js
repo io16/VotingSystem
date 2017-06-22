@@ -4,8 +4,7 @@
 $(document).ready(function () {
     console.log("ready!");
     var t = getSessionToken();
-    if ( t.toString().length>20 )
-    {
+    if (t != undefined) {
         console.log(getSessionUser())
         document.getElementById("sign-in-a").style.display = "none";
         document.getElementById("reg-a").style.display = "none";
@@ -13,29 +12,31 @@ $(document).ready(function () {
         document.getElementById("user-a").style.display = "block";
         document.getElementById("user-a").innerHTML = getSessionUser()
     }
-
+    else window.location.replace("signin")
 
 
 });
 
 function getSessionToken() {
     return $.session.get("token");
-}function getSessionUser() {
+}
+function getSessionUser() {
     return $.session.get("user");
 }
 
 var countQuestions = 0;
 
 function insertQuestions() {
+    document.getElementById("questionsWithFields").style.display = "none";
+    document.getElementById("sendTestButton").style.display = "none";
+    document.getElementById("createTestButton").disabled = true;
     countQuestions = document.getElementById('countQuestions').value;
     document.getElementById('questions').innerHTML = '';
     var result = '';
     for (var i = 1; i <= countQuestions; i++) {
 
-        result += '<div class="form-group"> <label for="question-' + i + '-countAnswer">Count Answers to question №' + i + ':</label> <input type="text" class="form-control" id="question-' + i + '-countAnswer" required> <label>Type Answer</label> <label class="radio-inline"><input type="radio" name="optradio' + i + '" checked>radio </label> <label class="radio-inline"><input type="radio" name="optradio' + i + '">checkbox </label> </div>';
+        result += '<div class="form-group"> <label for="question-' + i + '-countAnswer">Count Answers to question №' + i + ':</label> <input type="text" class="form-control" id="question-' + i + '-countAnswer" onchange="validateSecondStage(this)"   data-toggle="tooltip" data-placement="left" title="input number > 0"required> <label>Type Answer</label> <label class="radio-inline"><input type="radio" name="optradio' + i + '" checked>radio </label> <label class="radio-inline"><input type="radio" name="optradio' + i + '">checkbox </label> </div>';
     }
-
-
     document.getElementById('questions').innerHTML = result;
     document.getElementById("createTestButton").style.display = "block";
 }
@@ -45,6 +46,8 @@ $('#createTestTemplate').submit(function () {
 });
 
 function insertAnswers() {
+    document.getElementById("questionsWithFields").style.display = "block";
+    document.getElementById("sendTestButton").style.display = "block";
     document.getElementById('questionsWithFields').innerHTML = '';
     var result = '';
     var countAnswer;
@@ -71,7 +74,6 @@ function insertAnswers() {
         document.getElementById("sendTestButton").style.display = "block";
     }
 
-
 }
 $('#createTestAnswers').submit(function () {
 
@@ -97,7 +99,6 @@ function saveTest() {
                 break;
             }
         }
-
     }
 
     if (status) {
@@ -122,23 +123,135 @@ function saveTest() {
                 tempArr.push(document.getElementById('question-' + i + '-answer-' + j).value)
             }
             answToQuest.answerToquestion.push(tempArr);
-
         }
-
-
-
         var obj = new Object();
         obj.name = $('#testName').val();
         obj.category = $('#testCategory').val();
         obj.questions = questions;
 
-        obj.answertoquestion=answToQuest.answerToquestion;
+        obj.answertoquestion = answToQuest.answerToquestion;
         console.dir(obj)
         $.post("/savevote", {
                 data: JSON.stringify(obj)
-            }
 
+            },function () {
+            window.location.replace("/")
+            }
         )
+    }
+}
+
+function validateFirstStageText(item) {
+
+    var patt = /^[a-zA-Zа-яА-Я0-9]+$/;
+    if (patt.test(item.value)) {
+
+        if (isFirstStageValid())
+            document.getElementById("insertQuestionsBtn").removeAttribute("disabled");
+        document.getElementById('wrongDateDiv1').innerHTML = '';
+    }
+    else {
+        document.getElementById("insertQuestionsBtn").disabled = true;
+
+        document.getElementById('wrongDateDiv1').innerHTML = ' <span class="label label-danger "> Wrong Test Name or Test Category or Count Questions.   </span>'
+    }
+}
+function isFirstStageValid() {
+    var testName = $('#testName').val();
+    var testCategory = $('#testCategory').val();
+    var countQuestions = $('#countQuestions').val();
+    var patt1 = /^[a-zA-Zа-яА-Я0-9]+$/;
+    var patt2 = /^[0-9]+$/;
+
+    return (patt1.test(testName) && patt1.test(testCategory) && patt2.test(countQuestions) && countQuestions != "0")
+}
+function validateFirstStageCount(item) {
+    var patt = /^[0-9]+$/;
+    document.getElementById("questionsWithFields").style.display = "none";
+    document.getElementById("sendTestButton").style.display = "none";
+    if (patt.test(item.value)) {
+        if (isFirstStageValid())
+            document.getElementById("insertQuestionsBtn").removeAttribute("disabled");
+        document.getElementById('wrongDateDiv1').innerHTML = '';
+    }
+    else {
+
+        document.getElementById("insertQuestionsBtn").disabled = true;
+
+
+        document.getElementById('wrongDateDiv1').innerHTML = ' <span class="label label-danger "> Wrong Test Name or Test Category or Count Questions.   </span>'
     }
 
 }
+function isSecondStageValid() {
+    var status = true;
+    var patt = /^[0-9]+$/;
+    for (var i = 1; i <= countQuestions; i++) {
+        var item = document.getElementById('question-' + i + '-countAnswer').value;
+        if (patt.test(item) && item != "0") {
+            continue;
+        } else {
+            status = false;
+            break;
+        }
+    }
+    return status
+}
+function validateSecondStage(item) {
+
+    var patt1 = /^[0-9]+$/;
+
+    if (patt1.test(item.value) && item.value != "0") {
+        if (isSecondStageValid())
+            document.getElementById("createTestButton").disabled = false;
+        document.getElementById('wrongDateDiv2').innerHTML = '';
+    }
+    else {
+        document.getElementById("createTestButton").disabled = true;
+
+        document.getElementById('wrongDateDiv2').innerHTML = ' <span class="label label-danger "> Wrong  Count Answers.   </span>'
+
+    }
+}
+function signOut() {
+    console.log("out")
+
+    $.session.set("token", "");
+    $.session.set("user", "");
+    window.location.replace("/")
+}
+//
+// function getTest() {
+//     var tests = '';
+//     $.ajax
+//     ({
+//         type: "GET",
+//         url: "/getvotes",
+//         dataType: 'json',
+//         async: false,
+//
+//         success: function (data) {
+//
+//             tests = data
+//         }
+//     });
+//     return tests
+// }
+//
+// $(function() {
+//     var tests = getTest();
+//     var categories =[];
+//     for(var i in tests["Vote"])
+//     {
+//
+//     }
+//     var availableTutorials  =  [
+//         "ActionScript",
+//         "Boostrap",
+//         "C",
+//         "C++"
+//     ];
+//     $( "#testCategory" ).autocomplete({
+//         source: availableTutorials
+//     });
+// });
