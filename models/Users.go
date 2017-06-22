@@ -38,12 +38,11 @@ func GetUsersToVote(c echo.Context) error {
 	userAnswers := []UserAnswer{}
 	config.DB.Where("vote_id = ?", idVote).Find(&userAnswers)
 	users := []UsersToVote{}
-	user := User{}
 
 	for i, item := range userAnswers {
 		t := UsersToVote{}
+		user := User{}
 		config.DB.Where("id = ?", item.UserID).First(&user)
-
 
 		t.Name = user.Name
 		t.Time = userAnswers[i].Time
